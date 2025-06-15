@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Toast
@@ -103,16 +105,27 @@ class SyncContactActivity : AppCompatActivity() {
         val users = adapter.currentList
         var count = 0
         for (user in users) {
-            if (!syncedContacts.contains(user.phone)) {
+
+            if (!isContactAlreadyExists(user.phone)) {
                 if (saveContactToPhone(user)) {
                     syncedContacts.add(user.phone)
                     count++
                 }
             }
+
         }
 
+        if(count == 0){
+            Toast.makeText(this, "Contacts already synced", Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(this, "$count contacts synced", Toast.LENGTH_SHORT).show()
+        }
 
-        Toast.makeText(this, "$count contacts synced", Toast.LENGTH_SHORT).show()
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = Intent(this@SyncContactActivity, MainActivity::class.java)
+            startActivity(intent)
+        }, 2000) //millis
+
     }
 
     private fun saveContactToPhone(user: User): Boolean {
@@ -187,6 +200,18 @@ class SyncContactActivity : AppCompatActivity() {
                 android.Manifest.permission.WRITE_CONTACTS
             )
         )
+    }
+
+    private fun isContactAlreadyExists(phone: String): Boolean {
+        val uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+        val selection = "${ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER} = ? OR ${ContactsContract.CommonDataKinds.Phone.NUMBER} = ?"
+        val selectionArgs = arrayOf(phone, phone)
+
+        contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+            return cursor.count > 0
+        }
+        return false
     }
 
     private fun getContactUriByPhone(phone: String): Uri? {

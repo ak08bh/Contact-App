@@ -73,19 +73,20 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             startActivity(intent)
         }
 
-        contactsListView.setOnItemClickListener { parent, view, position, id ->
+        contactsListView.setOnItemClickListener { _, _, position, _ ->
             val cursor = cursorAdapter.getItem(position) as Cursor
-            val contactId = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
 
-            val uri = ContactsContract.Contacts.getLookupUri(contactId, cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY)))
+            val contactId = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+            val lookupKey = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY))
+
+            val contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
 
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = uri
+                data = contactUri
             }
 
             startActivity(intent)
         }
-
 
     }
 
@@ -105,8 +106,10 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         val projection = arrayOf(
             ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
         )
+
 
         return CursorLoader(
             this,
