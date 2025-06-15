@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ContactsApp</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="save">Save</string>
+    <string name="firstname">FirstName</string>
+    <string name="first_name">First name</string>
+    <string name="surname">Surname</string>
+    <string name="company">Company</string>
+    <string name="phone_mobile">Phone (mobile)</string>
+    <string name="new_contacts_found">New contacts found</string>
+    <string name="john_smit">John Smith</string>
+    <string name="business_consultant">Business Consultant</string>
+    <string name="_91_6267850213">+91 6267850213</string>
+    <string name="akshitabhandari_dev_gmail_com">akshitabhandari.dev@gmail.com</string>
+    <string name="sync_contacts">sync contacts</string>
+    <string name="contactCreationFailure">Failure\n</string>
+</resources>
